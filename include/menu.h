@@ -37,6 +37,8 @@ int menu_default_choice(struct menu *m, void **choice);
  */
 int menu_show(int bootdelay);
 
+int get_choice_char(int index, char *result);
+
 struct bootmenu_data {
 	int delay;			/* delay for autoboot */
 	int active;			/* active menu entry */
@@ -51,6 +53,7 @@ enum bootmenu_key {
 	BKEY_UP,
 	BKEY_DOWN,
 	BKEY_SELECT,
+	BKEY_CHOICE,
 	BKEY_QUIT,
 	BKEY_SAVE,
 
