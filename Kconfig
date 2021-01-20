@@ -12,6 +12,8 @@ source "scripts/Kconfig.include"
 # Allow defaults in arch-specific code to override any given here
 source "arch/Kconfig"
 
+source "board/mediatek/Kconfig"
+
 menu "General setup"
 
 config BROKEN
