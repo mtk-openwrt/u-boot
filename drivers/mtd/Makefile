@@ -40,3 +40,5 @@ obj-$(CONFIG_$(PHASE_)SPI_FLASH_SUPPORT) += spi/
 obj-$(CONFIG_SPL_UBI) += ubispl/
 
 endif
+
+obj-$(CONFIG_MTK_SPI_NAND) += mtk-snand/
