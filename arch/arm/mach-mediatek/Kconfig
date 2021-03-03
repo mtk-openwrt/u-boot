@@ -156,7 +156,7 @@ config SYS_CONFIG_NAME
 
 config MTK_BROM_HEADER_INFO
 	string
-	default "media=nor" if TARGET_MT8518 || TARGET_MT8512 || TARGET_MT7629
+	default "media=nor" if TARGET_MT8518 || TARGET_MT8512
 	default "media=emmc" if TARGET_MT8516 || TARGET_MT8365 || TARGET_MT8183
 	default "lk=1" if TARGET_MT7623
 
@@ -164,5 +164,7 @@ config MTK_TZ_MOVABLE
 	select ARCH_MISC_INIT
 	select OF_SYSTEM_SETUP
 	bool
+
+source "board/mediatek/mt7629/Kconfig"
 
 endif
