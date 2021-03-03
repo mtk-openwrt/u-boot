@@ -108,6 +108,7 @@ enum env_location {
 	ENVL_FAT,
 	ENVL_FLASH,
 	ENVL_MMC,
+	ENVL_MTD,
 	ENVL_NAND,
 	ENVL_NVRAM,
 	ENVL_ONENAND,
