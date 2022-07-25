@@ -105,6 +105,18 @@ static int env_ubi_save(void)
 #endif /* CONFIG_SYS_REDUNDAND_ENVIRONMENT */
 #endif /* CONFIG_CMD_SAVEENV */
 
+int __weak env_ubi_volume_create(const char *volume)
+{
+	struct ubi_volume *vol;
+
+	vol = ubi_find_volume((char *)volume);
+	if (vol)
+		return 0;
+
+	return ubi_create_vol((char *)volume, CONFIG_ENV_SIZE, true,
+			      UBI_VOL_NUM_AUTO, false);
+}
+
 #ifdef CONFIG_SYS_REDUNDAND_ENVIRONMENT
 static int env_ubi_load(void)
 {
@@ -132,6 +144,11 @@ static int env_ubi_load(void)
 		       CONFIG_ENV_UBI_PART);
 		env_set_default(NULL, 0);
 		return -EIO;
+	}
+
+	if (IS_ENABLED(CONFIG_ENV_UBI_VOLUME_CREATE)) {
+		env_ubi_volume_create(CONFIG_ENV_UBI_VOLUME);
+		env_ubi_volume_create(CONFIG_ENV_UBI_VOLUME_REDUND);
 	}
 
 	read1_fail = ubi_volume_read(CONFIG_ENV_UBI_VOLUME, (void *)tmp_env1, 0,
@@ -170,6 +187,9 @@ static int env_ubi_load(void)
 		env_set_default(NULL, 0);
 		return -EIO;
 	}
+
+	if (IS_ENABLED(CONFIG_ENV_UBI_VOLUME_CREATE))
+		env_ubi_volume_create(CONFIG_ENV_UBI_VOLUME);
 
 	if (ubi_volume_read(CONFIG_ENV_UBI_VOLUME, buf, 0, CONFIG_ENV_SIZE)) {
 		printf("\n** Unable to read env from %s:%s **\n",
