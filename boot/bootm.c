@@ -50,6 +50,11 @@ __weak void board_quiesce_devices(void)
 {
 }
 
+__weak int mtk_ar_update_fw_ar_ver(uint32_t fw_ar_ver)
+{
+	return 0;
+}
+
 #if CONFIG_IS_ENABLED(LEGACY_IMAGE_FORMAT)
 /**
  * image_get_kernel - verify legacy format kernel image
@@ -1099,6 +1104,10 @@ int bootm_run_states(struct bootm_info *bmi, int states)
 		printf("subcommand failed (err=%d)\n", ret);
 		return ret;
 	}
+
+	/* Update firmware anti-rollback version */
+	if (!ret && (states & BOOTM_STATE_OS_GO))
+		ret = mtk_ar_update_fw_ar_ver(images->fw_ar_ver);
 
 	/* Now run the OS! We hope this doesn't return */
 	if (!ret && (states & BOOTM_STATE_OS_GO))
