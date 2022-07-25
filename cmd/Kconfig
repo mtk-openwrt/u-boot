@@ -1541,6 +1541,12 @@ config CMD_NAND_WATCH
 
 endif # CMD_NAND
 
+config CMD_NMBM
+	depends on NMBM_MTD
+	bool "nmbm"
+	help
+	  NAND mapping block management (NMBM) utility
+
 config CMD_NVME
 	bool "nvme"
 	depends on NVME
