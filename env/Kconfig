@@ -74,7 +74,7 @@ config ENV_IS_DEFAULT
 		     !ENV_IS_IN_MMC && !ENV_IS_IN_NAND && \
 		     !ENV_IS_IN_NVRAM && !ENV_IS_IN_ONENAND && \
 		     !ENV_IS_IN_REMOTE && !ENV_IS_IN_SPI_FLASH && \
-		     !ENV_IS_IN_UBI && !ENV_IS_IN_MTD
+		     !ENV_IS_IN_UBI && !ENV_IS_IN_NMBM && !ENV_IS_IN_MTD
 	select ENV_IS_NOWHERE
 
 config ENV_IS_NOWHERE
@@ -317,6 +317,21 @@ config ENV_IS_IN_NAND
 	  "nand env.oob" command can be used to record this offset.
 	  Currently, CONFIG_ENV_OFFSET_REDUND is not supported when
 	  using CONFIG_ENV_OFFSET_OOB.
+
+config ENV_IS_IN_NMBM
+	bool "Environment in a NMBM upper MTD layer"
+	depends on !CHAIN_OF_TRUST
+	depends on NMBM_MTD
+	help
+	  Define this if you have a NMBM upper MTD which you want to use for
+	  the environment.
+
+	  - CONFIG_ENV_OFFSET:
+	  - CONFIG_ENV_SIZE:
+
+	  These two #defines specify the offset and size of the environment
+	  area within the first NAND device.  CONFIG_ENV_OFFSET must be
+	  aligned to an erase block boundary.
 
 config ENV_RANGE
 	hex "Length of the region in which the environment can be written"
@@ -604,7 +619,7 @@ config ENV_MTD_NAME
 config ENV_OFFSET
 	hex "Environment offset"
 	depends on ENV_IS_IN_EEPROM || ENV_IS_IN_MMC || ENV_IS_IN_NAND || \
-		    ENV_IS_IN_SPI_FLASH || ENV_IS_IN_MTD
+		    ENV_IS_IN_SPI_FLASH || ENV_IS_IN_NMBM || ENV_IS_IN_MTD
 	default 0x3f8000 if ARCH_ROCKCHIP && ENV_IS_IN_MMC
 	default 0x140000 if ARCH_ROCKCHIP && ENV_IS_IN_SPI_FLASH
 	default 0xF0000 if ARCH_SUNXI
