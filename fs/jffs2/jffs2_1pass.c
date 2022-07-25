@@ -1801,6 +1801,8 @@ jffs2_1pass_build_lists(struct part_info * part)
 						sizeof(struct jffs2_unknown_node));
 				break;
 			case JFFS2_NODETYPE_SUMMARY:
+			case JFFS2_NODETYPE_XATTR:
+			case JFFS2_NODETYPE_XREF:
 				break;
 			default:
 				printf("Unknown node type: %x len %d offset 0x%x\n",
