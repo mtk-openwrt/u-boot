@@ -242,7 +242,11 @@ static int boot_get_kernel(const char *addr_fit, struct bootm_headers *images,
 static int bootm_start(void)
 {
 	memset((void *)&images, 0, sizeof(images));
+#if defined(CONFIG_IMAGE_FORCED_VERIFY)
+	images.verify = 1;
+#else
 	images.verify = env_get_yesno("verify");
+#endif
 
 	bootstage_mark_name(BOOTSTAGE_ID_BOOTM_START, "bootm_start");
 	images.state = BOOTM_STATE_START;
