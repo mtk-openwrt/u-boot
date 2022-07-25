@@ -66,6 +66,12 @@ menuconfig FIT
 
 if FIT
 
+config IMAGE_FORCED_VERIFY
+	bool "Forced image doing verification"
+	help
+	  This option let you forced image doing verification. the verification
+	  can not be skipped via setting environment variable(verify) anymore.
+
 config FIT_EXTERNAL_OFFSET
 	hex "FIT external data offset"
 	default 0x0
