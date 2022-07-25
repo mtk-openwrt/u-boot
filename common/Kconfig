@@ -1248,3 +1248,10 @@ endif
 
 config IO_TRACE
 	bool
+
+config FDT_NO_BOOTARGS_OVERRIDE
+	bool "Do not override bootargs in FDT"
+	depends on OF_LIBFDT
+	help
+	  Enable this option to avoid bootargs in fdt being overrided by that
+	  set in environment.

@@ -341,7 +341,9 @@ int fdt_chosen(void *fdt)
 	struct abuf buf = {};
 	int   nodeoffset;
 	int   err;
+#ifndef CONFIG_FDT_NO_BOOTARGS_OVERRIDE
 	const char *str;		/* used to set string properties */
+#endif
 
 	err = fdt_check_header(fdt);
 	if (err < 0) {
@@ -374,6 +376,7 @@ int fdt_chosen(void *fdt)
 		}
 	}
 
+#ifndef CONFIG_FDT_NO_BOOTARGS_OVERRIDE
 	str = board_fdt_chosen_bootargs(fdt_get_property(fdt, nodeoffset,
 							 "bootargs", NULL));
 
@@ -386,6 +389,7 @@ int fdt_chosen(void *fdt)
 			return err;
 		}
 	}
+#endif
 
 	/* add u-boot version */
 	err = fdt_setprop(fdt, nodeoffset, "u-boot,version", PLAIN_VERSION,
