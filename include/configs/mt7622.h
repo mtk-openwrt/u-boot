@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
- * Configuration for MediaTek MT7629 SoC
+ * Configuration for MediaTek MT7622 SoC
  *
  * Copyright (C) 2019 MediaTek Inc.
  * Author: Sam Shih <sam.shih@mediatek.com>
