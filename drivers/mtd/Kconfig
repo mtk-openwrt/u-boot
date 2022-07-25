@@ -276,6 +276,8 @@ config SYS_NAND_MAX_CHIPS
 	help
 	  The maximum number of NAND chips per device to be supported.
 
+source "drivers/mtd/nmbm/Kconfig"
+
 source "drivers/mtd/spi/Kconfig"
 
 source "drivers/mtd/ubi/Kconfig"
