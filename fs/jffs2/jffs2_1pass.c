@@ -787,6 +787,11 @@ jffs2_1pass_read_inode(struct b_lists *pL, u32 inode, char *dest)
 					lzo_decompress(src, lDest, jNode->csize, jNode->dsize);
 					break;
 #endif
+#if defined(CONFIG_JFFS2_LZMA)
+				case JFFS2_COMPR_LZMA:
+					lzma_decompress(src, lDest, jNode->csize, jNode->dsize);
+					break;
+#endif
 				default:
 					/* unknown */
 					putLabeledWord("UNKNOWN COMPRESSION METHOD = ", jNode->compr);
