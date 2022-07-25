@@ -226,7 +226,11 @@ int ubi_create_vol(char *volume, int64_t size, int dynamic, int vol_id,
 
 	req.vol_id = vol_id;
 	req.alignment = 1;
-	req.bytes = size;
+
+	if (size < 0)
+		req.bytes = ubi->avail_pebs * ubi->leb_size;
+	else
+		req.bytes = size;
 
 	strcpy(req.name, volume);
 	req.name_len = strlen(volume);
