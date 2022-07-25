@@ -398,6 +398,20 @@ static int initr_nand(void)
 }
 #endif
 
+#ifdef CONFIG_NMBM_MTD
+
+__weak int board_nmbm_init(void)
+{
+	return 0;
+}
+
+/* go init the NMBM */
+static int initr_nmbm(void)
+{
+	return board_nmbm_init();
+}
+#endif
+
 #if defined(CONFIG_CMD_ONENAND)
 /* go init the NAND */
 static int initr_onenand(void)
@@ -712,6 +726,9 @@ static void initcall_run_r(void)
 #endif
 #if CONFIG_IS_ENABLED(CMD_ONENAND)
 	INITCALL(initr_onenand);
+#endif
+#if CONFIG_IS_ENABLED(NMBM_MTD)
+	INITCALL(initr_nmbm);
 #endif
 #if CONFIG_IS_ENABLED(MMC)
 	INITCALL(initr_mmc);
