@@ -868,6 +868,14 @@ config MMC_MTK
 	  This is needed if support for any SD/SDIO/MMC devices is required.
 	  If unsure, say N.
 
+config MMC_MTK_DEBUG
+	bool "Display verbose error log"
+	default n
+	depends on MMC_MTK
+	help
+	  Enable this option to allow verbose error log being displayed for
+	  debugging.
+
 endif
 
 config FSL_SDHC_V2_3
