@@ -50,6 +50,14 @@
 		};
 	};
 
+	firmware {
+		optee {
+			status = "okay";
+			method = "smc";
+			compatible = "linaro,optee-tz";
+		};
+	};
+
 	dummy_clk: dummy12m {
 		compatible = "fixed-clock";
 		clock-frequency = <12000000>;
