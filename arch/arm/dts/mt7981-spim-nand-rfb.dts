@@ -12,7 +12,7 @@
 	#address-cells = <1>;
 	#size-cells = <1>;
 	model = "mt7981-rfb";
-	compatible = "mediatek,mt7981", "mediatek,mt7981-sd-rfb";
+	compatible = "mediatek,mt7981", "mediatek,mt7981-rfb";
 	chosen {
 		stdout-path = &uart0;
 		tick-timer = &timer0;
@@ -23,18 +23,15 @@
 		reg = <0x40000000 0x10000000>;
 	};
 
-	reg_3p3v: regulator-3p3v {
-		  compatible = "regulator-fixed";
-		  regulator-name = "fixed-3.3V";
-		  regulator-min-microvolt = <3300000>;
-		  regulator-max-microvolt = <3300000>;
-		  regulator-boot-on;
-		  regulator-always-on;
-	};
-
 	bl2_verify {
-		bl2_compatible = "sd";
+		bl2_compatible = "spim-nand";
 	};
+};
+
+&i2c0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c0_pins>;
+	status = "okay";
 };
 
 &uart0 {
@@ -61,6 +58,32 @@
 };
 
 &pio {
+	i2c0_pins: i2c0-pins {
+		mux {
+			function = "i2c";
+			groups = "i2c0_1";
+		};
+	};
+
+	spi_flash_pins: spi0-pins-func-1 {
+		mux {
+			function = "flash";
+			groups = "spi0", "spi0_wp_hold";
+		};
+
+		conf-pu {
+			pins = "SPI0_CS", "SPI0_HOLD", "SPI0_WP";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_11>;
+		};
+
+		conf-pd {
+			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_11>;
+		};
+	};
+
 	spic_pins: spi1-pins-func-1 {
 		mux {
 			function = "spi";
@@ -106,30 +129,26 @@
 			groups = "pwm0_0", "pwm1_1", "pwm2";
 		};
 	};
+};
 
-	mmc0_pins_default: mmc0default {
-		mux {
-			function = "flash";
-			groups =  "emmc_45";
-		};
-		conf-cmd-dat {
-			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO",
-				"SPI0_CS",  "SPI0_HOLD", "SPI0_WP",
-				"SPI1_CLK", "SPI1_MOSI", "SPI1_MISO";
-			input-enable;
-			drive-strength = <MTK_DRIVE_4mA>;
-			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-		};
-		conf-clk {
-			pins = "SPI1_CS";
-			drive-strength = <MTK_DRIVE_8mA>;
-			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
-		};
-		conf-rst {
-			pins = "PWM0";
-			drive-strength = <MTK_DRIVE_4mA>;
-			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-		};
+&spi0 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_flash_pins>;
+	status = "okay";
+	must_tx;
+	enhance_timing;
+	dma_ext;
+	ipm_design;
+	support_quad;
+	tick_dly = <2>;
+	sample_sel = <0>;
+
+	spi_nand@0 {
+		compatible = "spi-nand";
+		reg = <0>;
+		spi-max-frequency = <52000000>;
 	};
 };
 
@@ -141,18 +160,4 @@
 
 &watchdog {
 	status = "disabled";
-};
-
-&mmc0 {
-	assigned-clock-parents = <&topckgen CLK_TOP_CB_NET2_D4>,
-				 <&topckgen CLK_TOP_CB_NET2_D2>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&mmc0_pins_default>;
-	bus-width = <4>;
-	max-frequency = <50000000>;
-	cap-sd-highspeed;
-	r_smpl = <0>;
-	vmmc-supply = <&reg_3p3v>;
-	vqmmc-supply = <&reg_3p3v>;
-	status = "okay";
 };

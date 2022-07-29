@@ -17,6 +17,15 @@
 		stdout-path = &uart0;
 		tick-timer = &timer0;
 	};
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0x40000000 0x10000000>;
+	};
+
+	bl2_verify {
+		bl2_compatible = "snfi-nand";
+	};
 };
 
 &uart0 {
@@ -32,17 +41,17 @@
 &eth {
 	status = "okay";
 	mediatek,gmac-id = <0>;
-	phy-mode = "sgmii";
-	mediatek,switch = "mt7531";
-	reset-gpios = <&gpio 39 GPIO_ACTIVE_HIGH>;
+	phy-mode = "2500base-x";
+	mediatek,switch = "auto";
+	reset-gpios = <&pio 39 GPIO_ACTIVE_HIGH>;
 
 	fixed-link {
-		speed = <1000>;
+		speed = <2500>;
 		full-duplex;
 	};
 };
 
-&pinctrl {
+&pio {
 	snfi_pins: snfi-pins-func-1 {
 		mux {
 			function = "flash";
@@ -103,6 +112,14 @@
 		mux {
 			function = "pwm";
 			groups = "pwm0_1", "pwm1_0", "pwm2";
+		};
+	};
+
+	/* pin13 as pwm0, pin15 as pwm1, pin7 as pwm2 */
+	three_pwm_pins_1: three-pwm-pins {
+		mux {
+			function = "pwm";
+			groups = "pwm0_0", "pwm1_1", "pwm2";
 		};
 	};
 

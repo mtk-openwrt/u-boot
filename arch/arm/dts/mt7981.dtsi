@@ -16,6 +16,11 @@
 	interrupt-parent = <&gic>;
 	#address-cells = <1>;
 	#size-cells = <1>;
+
+	config {
+		u-boot,mmc-env-partition = "u-boot-env";
+	};
+
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
