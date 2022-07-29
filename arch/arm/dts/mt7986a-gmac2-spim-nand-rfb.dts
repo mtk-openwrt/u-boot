@@ -13,7 +13,7 @@
 	#size-cells = <1>;
 	model = "mt7986-rfb";
 	compatible = "mediatek,mt7986", "mediatek,mt7986-rfb",
-		     "mediatek,mt7986-sd-rfb";
+		     "mediatek,mt7986-gmac2-spim-nand-rfb";
 	chosen {
 		stdout-path = &uart0;
 		tick-timer = &timer0;
@@ -22,6 +22,15 @@
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x40000000 0x10000000>;
+	};
+
+	reg_1p8v: regulator-1p8v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-1.8V";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		regulator-boot-on;
+		regulator-always-on;
 	};
 
 	reg_3p3v: regulator-3p3v {
@@ -34,7 +43,7 @@
 	};
 
 	bl2_verify {
-		bl2_compatible = "sd";
+		bl2_compatible = "spim-nand";
 	};
 };
 
@@ -50,14 +59,17 @@
 
 &eth {
 	status = "okay";
-	mediatek,gmac-id = <0>;
-	phy-mode = "2500base-x";
-	mediatek,switch = "mt7531";
-	reset-gpios = <&pio 5 GPIO_ACTIVE_HIGH>;
+	mediatek,gmac-id = <1>;
+	mediatek,sgmiisys = <&sgmiisys1>;
+	phy-mode = "sgmii";
+	phy-handle = <&phy6>;
 
-	fixed-link {
-		speed = <2500>;
-		full-duplex;
+	phy6: eth-phy@6 {
+		compatible = "ethernet-phy-id67c9.de0a";
+		reg = <6>;
+		reset-gpios = <&pio 6 GPIO_ACTIVE_LOW>;
+		reset-assert-us = <600>;
+		reset-deassert-us = <20000>;
 	};
 };
 
@@ -78,6 +90,31 @@
 			pins = "SPI2_CLK", "SPI2_MOSI", "SPI2_MISO";
 			drive-strength = <MTK_DRIVE_8mA>;
 			bias-pull-down = <MTK_PUPD_SET_R1R0_11>;
+		};
+	};
+
+	snfi_pins: snfi-pins-func-1 {
+		mux {
+			function = "flash";
+			groups = "snfi";
+		};
+
+		clk {
+			pins = "SPI0_CLK";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_00>;
+		};
+
+		conf-pu {
+			pins = "SPI0_CS", "SPI0_HOLD", "SPI0_WP";
+			drive-strength = <MTK_DRIVE_6mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_00>;
+		};
+
+		conf-pd {
+			pins = "SPI0_MOSI", "SPI0_MISO";
+			drive-strength = <MTK_DRIVE_6mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_00>;
 		};
 	};
 
@@ -105,31 +142,42 @@
 	mmc0_pins_default: mmc0default {
 		mux {
 			function = "flash";
-			groups =  "emmc_45";
-			input-schmitt-enable;
+			groups =  "emmc_51";
 		};
 
 		conf-cmd-dat {
-			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO",
-			       "SPI0_CS", "SPI0_HOLD", "SPI0_WP",
-			       "SPI1_CLK", "SPI1_MOSI", "SPI1_MISO";
+			pins = "EMMC_DATA_0", "EMMC_DATA_1", "EMMC_DATA_2",
+			       "EMMC_DATA_3", "EMMC_DATA_4", "EMMC_DATA_5",
+			       "EMMC_DATA_6", "EMMC_DATA_7", "EMMC_CMD";
 			input-enable;
 			drive-strength = <MTK_DRIVE_4mA>;
 			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
 		};
 
 		conf-clk {
-			pins = "SPI1_CS";
+			pins = "EMMC_CK";
 			drive-strength = <MTK_DRIVE_6mA>;
 			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
 		};
 
+		conf-dsl {
+			pins = "EMMC_DSL";
+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
+		};
+
 		conf-rst {
-			pins = "PWM1";
+			pins = "EMMC_RSTB";
 			drive-strength = <MTK_DRIVE_4mA>;
 			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
 		};
 	};
+};
+
+&snand {
+	pinctrl-names = "default";
+	pinctrl-0 = <&snfi_pins>;
+	status = "okay";
+	quad-spi;
 };
 
 &spi0 {
@@ -172,11 +220,12 @@
 &mmc0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc0_pins_default>;
-	bus-width = <4>;
+	bus-width = <8>;
 	max-frequency = <52000000>;
-	cap-sd-highspeed;
-	r_smpl = <1>;
+	cap-mmc-highspeed;
+	cap-mmc-hw-reset;
 	vmmc-supply = <&reg_3p3v>;
-	vqmmc-supply = <&reg_3p3v>;
+	vqmmc-supply = <&reg_1p8v>;
+	non-removable;
 	status = "okay";
 };
