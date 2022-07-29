@@ -16,6 +16,11 @@
 	interrupt-parent = <&gic>;
 	#address-cells = <1>;
 	#size-cells = <1>;
+
+	config {
+		u-boot,mmc-env-partition = "u-boot-env";
+	};
+
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -30,6 +35,14 @@
 			compatible = "arm,cortex-a53";
 			reg = <0x1>;
 			mediatek,hwver = <&hwver>;
+		};
+	};
+
+	firmware {
+		optee {
+			status = "okay";
+			method = "smc";
+			compatible = "linaro,optee-tz";
 		};
 	};
 

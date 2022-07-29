@@ -31,6 +31,10 @@
 		  regulator-boot-on;
 		  regulator-always-on;
 	};
+
+	bl2_verify {
+		bl2_compatible = "emmc";
+	};
 };
 
 &uart0 {
@@ -127,6 +131,25 @@
 			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
 		};
 	};
+
+	spi2_flash_pins: spi2-spi2-pins {
+		mux {
+			function = "spi";
+			groups = "spi2", "spi2_wp_hold";
+		};
+
+		conf-pu {
+			pins = "SPI2_CS", "SPI2_HOLD", "SPI2_WP";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_00>;
+		};
+
+		conf-pd {
+			pins = "SPI2_CLK", "SPI2_MOSI", "SPI2_MISO";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_00>;
+		};
+	};
 };
 
 &pwm {
@@ -149,4 +172,25 @@
 	vmmc-supply = <&reg_3p3v>;
 	non-removable;
 	status = "okay";
+};
+
+&spi2 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi2_flash_pins>;
+	status = "okay";
+	must_tx;
+	enhance_timing;
+	dma_ext;
+	ipm_design;
+	support_quad;
+	tick_dly = <2>;
+	sample_sel = <0>;
+
+	spi_nor@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <52000000>;
+	};
 };

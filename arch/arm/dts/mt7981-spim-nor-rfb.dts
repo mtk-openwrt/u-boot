@@ -12,7 +12,7 @@
 	#address-cells = <1>;
 	#size-cells = <1>;
 	model = "mt7981-rfb";
-	compatible = "mediatek,mt7981", "mediatek,mt7981-sd-rfb";
+	compatible = "mediatek,mt7981", "mediatek,mt7981-rfb";
 	chosen {
 		stdout-path = &uart0;
 		tick-timer = &timer0;
@@ -23,17 +23,8 @@
 		reg = <0x40000000 0x10000000>;
 	};
 
-	reg_3p3v: regulator-3p3v {
-		  compatible = "regulator-fixed";
-		  regulator-name = "fixed-3.3V";
-		  regulator-min-microvolt = <3300000>;
-		  regulator-max-microvolt = <3300000>;
-		  regulator-boot-on;
-		  regulator-always-on;
-	};
-
 	bl2_verify {
-		bl2_compatible = "sd";
+		bl2_compatible = "spim-nor";
 	};
 };
 
@@ -65,6 +56,25 @@
 		mux {
 			function = "spi";
 			groups = "spi1_1";
+		};
+	};
+
+	spi2_flash_pins: spi2-spi2-pins {
+		mux {
+			function = "spi";
+			groups = "spi2", "spi2_wp_hold";
+		};
+
+		conf-pu {
+			pins = "SPI2_CS", "SPI2_HOLD", "SPI2_WP";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_00>;
+		};
+
+		conf-pd {
+			pins = "SPI2_CLK", "SPI2_MOSI", "SPI2_MISO";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_00>;
 		};
 	};
 
@@ -106,30 +116,26 @@
 			groups = "pwm0_0", "pwm1_1", "pwm2";
 		};
 	};
+};
 
-	mmc0_pins_default: mmc0default {
-		mux {
-			function = "flash";
-			groups =  "emmc_45";
-		};
-		conf-cmd-dat {
-			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO",
-				"SPI0_CS",  "SPI0_HOLD", "SPI0_WP",
-				"SPI1_CLK", "SPI1_MOSI", "SPI1_MISO";
-			input-enable;
-			drive-strength = <MTK_DRIVE_4mA>;
-			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-		};
-		conf-clk {
-			pins = "SPI1_CS";
-			drive-strength = <MTK_DRIVE_8mA>;
-			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
-		};
-		conf-rst {
-			pins = "PWM0";
-			drive-strength = <MTK_DRIVE_4mA>;
-			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-		};
+&spi2 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi2_flash_pins>;
+	status = "okay";
+	must_tx;
+	enhance_timing;
+	dma_ext;
+	ipm_design;
+	support_quad;
+	tick_dly = <2>;
+	sample_sel = <0>;
+
+	spi_nor@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <52000000>;
 	};
 };
 
@@ -141,18 +147,4 @@
 
 &watchdog {
 	status = "disabled";
-};
-
-&mmc0 {
-	assigned-clock-parents = <&topckgen CLK_TOP_CB_NET2_D4>,
-				 <&topckgen CLK_TOP_CB_NET2_D2>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&mmc0_pins_default>;
-	bus-width = <4>;
-	max-frequency = <50000000>;
-	cap-sd-highspeed;
-	r_smpl = <0>;
-	vmmc-supply = <&reg_3p3v>;
-	vqmmc-supply = <&reg_3p3v>;
-	status = "okay";
 };
