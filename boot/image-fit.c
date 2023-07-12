@@ -48,6 +48,15 @@ int mtk_ar_verify_fw_ar_ver(const void *fit, int conf_noffset,
 	return 0;
 }
 
+#ifndef USE_HOSTCC
+__weak
+#endif
+int mtk_fsek_decrypt_rfsk(const void *fit, const char *conf_name,
+			  int conf_noffset)
+{
+	return 0;
+}
+
 /*****************************************************************************/
 /* New uImage format routines */
 /*****************************************************************************/
@@ -2170,6 +2179,13 @@ int fit_image_load(struct bootm_headers *images, ulong addr,
 	if (ret) {
 		bootstage_error(bootstage_id + BOOTSTAGE_SUB_HASH);
 		return ret;
+	}
+
+	if (!strncmp(prop_name, FIT_FDT_PROP, strlen(FIT_FDT_PROP))) {
+		if (mtk_fsek_decrypt_rfsk(fit, fit_base_uname_config,
+					  cfg_noffset)) {
+			return -EACCES;
+		}
 	}
 
 	bootstage_mark(bootstage_id + BOOTSTAGE_SUB_CHECK_ARCH);
