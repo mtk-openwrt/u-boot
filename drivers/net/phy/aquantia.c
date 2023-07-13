@@ -17,6 +17,8 @@
 #include <asm/byteorder.h>
 #include <fs.h>
 
+#include "aquantia_fw.h"
+
 #define AQUNTIA_10G_CTL		0x20
 #define AQUNTIA_VENDOR_P1	0xc400
 
@@ -127,6 +129,28 @@ struct fw_header {
 #pragma pack()
 
 #if defined(CONFIG_PHY_AQUANTIA_UPLOAD_FW)
+#if defined(CONFIG_PHY_AQUANTIA_FW_ARRAY)
+static int aquantia_read_fw(u8 **fw_addr, size_t *fw_length)
+{
+	size_t length;
+	void *addr;
+
+	length = sizeof(aquantia_fw);
+
+	addr = malloc(length);
+	if (!addr) {
+		printf("Failed to allocate memory for Aquantia microcode");
+		return -ENOMEM;
+	}
+
+	memcpy(addr, aquantia_fw, length);
+
+	*fw_addr = addr;
+	*fw_length = length;
+
+	return 0;
+}
+#else
 static int aquantia_read_fw(u8 **fw_addr, size_t *fw_length)
 {
 	loff_t length, read;
@@ -173,6 +197,7 @@ cleanup:
 	}
 	return ret;
 }
+#endif
 
 /* load data into the phy's memory */
 static int aquantia_load_memory(struct phy_device *phydev, u32 addr,

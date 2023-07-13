@@ -93,6 +93,12 @@ config PHY_AQUANTIA_UPLOAD_FW
 		via MDIO commands.  The firmware is loaded from a file, specified by
 		the PHY_AQUANTIA_FW_PART and PHY_AQUANTIA_FW_NAME options.
 
+config PHY_AQUANTIA_FW_ARRAY
+	bool "Aquantia firmware array"
+	depends on PHY_AQUANTIA_UPLOAD_FW
+	help
+		Array containing the firmware file.
+
 config PHY_AQUANTIA_FW_PART
 	string "Aquantia firmware partition"
 	depends on PHY_AQUANTIA_UPLOAD_FW
