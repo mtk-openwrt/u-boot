@@ -226,6 +226,13 @@ config MTK_TCP
 	help
 	  Enable mediatek tcp framework that allows some customized features.
 
+config MTK_HTTPD
+	bool
+	default n
+	depends on MTK_TCP
+	help
+	  Enable mediatek httpd framework that allows some customized features.
+
 endif   # if NET
 
 source "net/lwip/Kconfig"
