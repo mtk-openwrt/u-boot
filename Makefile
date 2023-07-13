@@ -1162,11 +1162,27 @@ endif
 	@# disabling OF_BOARD.
 	$(call cmd,ofcheck,$(KCONFIG_CONFIG))
 
+
+ifneq ($(FIT_KEY),)
+FIT_KEY_DIR := $(patsubst %/,%,$(dir $(FIT_KEY)))
+FIT_KEY_NAME := $(basename $(notdir $(FIT_KEY)))
+
+ifneq ($(KEY_ALG),)
+FIT_KEY_ALG := $(KEY_ALG)
+else
+FIT_KEY_ALG := sha256,rsa2048
+endif
+
+endif
+
 PHONY += dtbs dtbs_check
 dtbs: dts/dt.dtb
 	@:
 dts/dt.dtb: dtbs_prepare u-boot
 	$(Q)$(MAKE) $(build)=dts dtbs
+ifneq ($(FIT_KEY),)
+	$(objtree)/tools/fdt_add_pubkey -a $(FIT_KEY_ALG) -k $(FIT_KEY_DIR) -n $(FIT_KEY_NAME) -r conf $@
+endif
 
 ifeq ($(CONFIG_MTK_KERNEL_ENCRYPT),y)
 	$(objtree)/tools/kernel_encrypt_add_node.sh $@ $(CONFIG_MTK_FW_ENC_ALGO) $(CONFIG_MTK_FW_ENC_KEY_NAME)
