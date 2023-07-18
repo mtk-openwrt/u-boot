@@ -18,6 +18,10 @@
 	#address-cells = <2>;
 	#size-cells = <2>;
 
+	config {
+		u-boot,mmc-env-partition = "u-boot-env";
+	};
+
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -48,6 +52,14 @@
 			compatible = "arm,cortex-a73";
 			reg = <0x3>;
 			mediatek,hwver = <&hwver>;
+		};
+	};
+
+	firmware {
+		optee {
+			status = "okay";
+			method = "smc";
+			compatible = "linaro,optee-tz";
 		};
 	};
 

@@ -51,3 +51,42 @@ ulong board_get_load_addr(void)
 
 	return gd->ram_base + SZ_256M;
 }
+
+const static struct {
+	const char *name;
+	const char *desc;
+	int group;
+} board_fit_conf_info[] = {
+	{ "mt7988a-rfb-emmc", "Image on eMMC", 0 },
+	{ "mt7988a-rfb-sd", "Image on SD", 0 },
+	{ "mt7988a-rfb-snfi-nand", "Image on SNFI-NAND", 0 },
+	{ "mt7988a-rfb-spim-nand", "Image on SPIM-NAND (UBI)", 0 },
+	{ "mt7988a-rfb-spim-nand-factory", "UBI \"factory\" volume config", -1 },
+	{ "mt7988a-rfb-spim-nand-nmbm", "Image on SPIM-NAND (NMBM)", 0 },
+	{ "mt7988a-rfb-spim-nor", "Image on SPI-NOR", 0 },
+	{ "mt7988a-rfb-eth1-aqr", "eth1 with AQR113C 10Gbps PHY", 1 },
+	{ "mt7988a-rfb-eth1-cux3410", "eth1 with CUX3410 10Gbps PHY", 1 },
+	{ "mt7988a-rfb-eth1-i2p5g-phy", "eth1 with internal 2.5Gbps PHY", 1 },
+	{ "mt7988a-rfb-eth1-mxl", "eth1 with GPY211 2.5Gbps PHY", 1 },
+	{ "mt7988a-rfb-eth1-sfp", "eth1 uses SFP interface", 1 },
+	{ "mt7988a-rfb-eth2-aqr", "eth2 with AQR113C 10Gbps PHY", 2 },
+	{ "mt7988a-rfb-eth2-cux3410", "eth2 with CUX3410 10Gbps PHY", 2 },
+	{ "mt7988a-rfb-eth2-mxl", "eth2 with GPY211 2.5Gbps PHY", 2 },
+	{ "mt7988a-rfb-eth2-sfp", "eth2 uses SFP interface", 2 },
+	{ "mt7988a-rfb-spidev", "spi1 with DH2228FV", -1 },
+};
+
+int mtk_board_get_fit_conf_info(const char *name, const char **retdesc)
+{
+	uint32_t i;
+
+	for (i = 0; i < ARRAY_SIZE(board_fit_conf_info); i++) {
+		if (!strcmp(name, board_fit_conf_info[i].name)) {
+			(*retdesc) = board_fit_conf_info[i].desc;
+			return board_fit_conf_info[i].group;
+		}
+	}
+
+	(*retdesc) = NULL;
+	return -1;
+}

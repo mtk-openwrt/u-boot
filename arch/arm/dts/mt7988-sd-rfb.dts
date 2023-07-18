@@ -29,6 +29,10 @@
 		regulator-boot-on;
 		regulator-always-on;
 	};
+
+	bl2_verify {
+		bl2_compatible = "sd";
+	};
 };
 
 &uart0 {
