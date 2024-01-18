@@ -1514,8 +1514,10 @@ static int fit_image_uncipher(const void *fit, int image_noffset,
 
 	cipher_noffset = fdt_subnode_offset(fit, image_noffset,
 					    FIT_CIPHER_NODENAME);
-	if (cipher_noffset < 0)
-		return 0;
+	if (cipher_noffset < 0) {
+		printf("cipher node not found\n");
+		return -ENOENT;
+	}
 
 	ret = fit_image_decrypt_data(fit, image_noffset, cipher_noffset,
 				     *data, *size, &dst, &size_dst);

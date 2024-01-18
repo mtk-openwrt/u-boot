@@ -43,4 +43,30 @@ int image_aes_decrypt(struct image_cipher_info *info,
 }
 #endif /* IMAGE_ENABLE_DECRYPT */
 
+#if CONFIG_MTK_FW_ENCRYPT_VIA_BL31
+int mtk_image_aes_decrypt(struct image_cipher_info *info,
+		      const void *cipher, size_t cipher_len,
+		      void **data, size_t *size);
+#else
+int mtk_image_aes_decrypt(struct image_cipher_info *info,
+		      const void *cipher, size_t cipher_len,
+		      void **data, size_t *size)
+{
+	return -ENXIO;
+}
+#endif /* CONFIG_MTK_FW_ENCRYPT_VIA_BL31 */
+
+#if CONFIG_MTK_FW_ENCRYPT_VIA_OPTEE
+int mtk_optee_image_aes_decrypt(struct image_cipher_info *info,
+		      const void *cipher, size_t cipher_len,
+		      void **data, size_t *size);
+#else
+int mtk_optee_image_aes_decrypt(struct image_cipher_info *info,
+		      const void *cipher, size_t cipher_len,
+		      void **data, size_t *size)
+{
+	return -ENXIO;
+}
+#endif /* CONFIG_MTK_FW_ENCRYPT_VIA_OPTEE */
+
 #endif
