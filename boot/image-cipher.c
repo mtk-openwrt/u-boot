@@ -48,6 +48,21 @@ struct cipher_algo cipher_algos[] = {
 		.encrypt = image_aes_encrypt,
 		.decrypt = image_aes_decrypt,
 		.add_cipher_data = image_aes_add_cipher_data
+	},
+	{
+		.name = "tee_aes256",
+		.key_len = AES256_KEY_LENGTH,
+		.iv_len  = AES_BLOCK_LENGTH,
+#if IMAGE_ENABLE_ENCRYPT
+		.calculate_type = EVP_aes_256_cbc,
+#endif
+		.encrypt = image_aes_encrypt,
+#ifdef USE_HOSTCC
+		.decrypt = image_aes_decrypt,
+#else
+		.decrypt = mtk_image_aes_decrypt,
+#endif
+		.add_cipher_data = image_aes_add_cipher_data
 	}
 };
 

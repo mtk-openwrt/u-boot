@@ -43,4 +43,18 @@ int image_aes_decrypt(struct image_cipher_info *info,
 }
 #endif /* IMAGE_ENABLE_DECRYPT */
 
+#if CONFIG_MTK_KERNEL_ENCRYPT
+int mtk_image_aes_decrypt(struct image_cipher_info *info,
+		      const void *cipher, size_t cipher_len,
+		      void **data, size_t *size);
+
+#else
+int mtk_image_aes_decrypt(struct image_cipher_info *info,
+		      const void *cipher, size_t cipher_len,
+		      void **data, size_t *size)
+{
+	return -ENXIO;
+}
+#endif /* CONFIG_MTK_KERNEL_ENCRYPT */
+
 #endif

@@ -1168,6 +1168,10 @@ dtbs: dts/dt.dtb
 dts/dt.dtb: dtbs_prepare u-boot
 	$(Q)$(MAKE) $(build)=dts dtbs
 
+ifeq ($(CONFIG_MTK_KERNEL_ENCRYPT),y)
+	$(objtree)/tools/kernel_encrypt_add_node.sh $@ $(CONFIG_MTK_FW_ENC_ALGO) $(CONFIG_MTK_FW_ENC_KEY_NAME)
+endif
+
 dtbs_prepare: prepare3
 
 ifneq ($(filter dtbs_check, $(MAKECMDGOALS)),)
