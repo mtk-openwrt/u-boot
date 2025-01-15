@@ -823,6 +823,11 @@ config LZMA
 	  ratio and fairly fast decompression speed. See also
 	  CONFIG_CMD_LZMADEC which provides a decode command.
 
+config XZ
+	bool "Enable XZ decompression support"
+	help
+	  This enables support for XZ
+
 config LZO
 	bool "Enable LZO decompression support"
 	help

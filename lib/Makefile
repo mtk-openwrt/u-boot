@@ -12,6 +12,7 @@ obj-$(CONFIG_CMD_BOOTEFI_SELFTEST) += efi_selftest/
 obj-$(CONFIG_FWU_MULTI_BANK_UPDATE) += fwu_updates/
 obj-$(CONFIG_LZMA) += lzma/
 obj-$(CONFIG_BZIP2) += bzip2/
+obj-$(CONFIG_XZ) += xz/
 obj-$(CONFIG_FIT) += libfdt/
 obj-$(CONFIG_OF_LIVE) += of_live.o
 obj-$(CONFIG_CMD_DHRYSTONE) += dhry/
