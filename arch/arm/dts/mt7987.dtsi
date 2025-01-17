@@ -38,9 +38,9 @@
 
 	firmware {
 		optee {
+			status = "okay";
 			method = "smc";
 			compatible = "linaro,optee-tz";
-			status = "okay";
 		};
 	};
 
