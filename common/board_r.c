@@ -467,6 +467,12 @@ static int initr_env(void)
 	else
 		env_set_default(NULL, 0);
 
+	if (env_get_yesno("env_invalid") == 1) {
+		printf("Reset to default environment\n");
+		env_set_default(NULL, 0);
+		env_save();
+	}
+
 	env_import_fdt();
 
 	if (IS_ENABLED(CONFIG_OF_CONTROL))
