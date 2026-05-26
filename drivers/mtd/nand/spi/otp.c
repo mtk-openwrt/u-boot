@@ -39,6 +39,8 @@ static size_t spinand_otp_size(struct spinand_device *spinand,
  */
 size_t spinand_fact_otp_size(struct spinand_device *spinand)
 {
+	if (!spinand->fact_otp)
+		return 0;
 	return spinand_otp_size(spinand, &spinand->fact_otp->layout);
 }
 
@@ -50,6 +52,8 @@ size_t spinand_fact_otp_size(struct spinand_device *spinand)
  */
 size_t spinand_user_otp_size(struct spinand_device *spinand)
 {
+	if (!spinand->user_otp)
+		return 0;
 	return spinand_otp_size(spinand, &spinand->user_otp->layout);
 }
 
