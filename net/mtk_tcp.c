@@ -14,6 +14,11 @@
 #include <net.h>
 #include <linux/list.h>
 #include <asm/global_data.h>
+
+#ifdef CONFIG_MTK_NET_MIPS_SP_COMPAT
+#undef sp
+#endif
+
 #include "mtk_tcp.h"
 #include "arp.h"
 

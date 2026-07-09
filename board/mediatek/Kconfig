@@ -194,6 +194,20 @@ config MTK_WGET
 	  Enable mtk_tcp-based wget command for downloading file from HTTP
 	  server.
 
+config MTK_NET_MIPS_SP_COMPAT
+	bool "Workaround MIPS sp macro conflict in TCP stack"
+	depends on MIPS
+	default n
+	help
+	  On MIPS platforms, arch/mips/include/asm/regdef.h defines 'sp'
+	  as '$29' (stack pointer register).  This conflicts with the
+	  'sp' field in struct mtk_tcp_cb_data used by the MTK TCP/HTTP
+	  failsafe stack.  Enable this option to undefine 'sp' before
+	  the struct is parsed.
+
+	  Only needed for older MIPS SoCs (e.g. MT7628) that enable
+	  MTK_WEB_FAILSAFE or MTK_TCP.
+
 config MTK_UBI_SUPPORT
 	bool "Enable support for UBI-based images"
 	select MTD_UBI
