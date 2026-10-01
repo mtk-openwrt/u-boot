@@ -305,7 +305,9 @@ const char *fit_image_conf_def(const void *fit)
 u32 itb_image_size(const void *fit)
 {
 	int images_noffset, noffset, ndepth, count, ret;
-	u32 offset, len, end = 0;
+	u32 offset, end = 0;
+	const void *data;
+	size_t len;
 
 	images_noffset = fdt_path_offset(fit, FIT_IMAGES_PATH);
 	if (images_noffset < 0) {
@@ -318,21 +320,22 @@ u32 itb_image_size(const void *fit)
 			(noffset >= 0) && (ndepth > 0);
 			noffset = fdt_next_node(fit, noffset, &ndepth)) {
 		if (ndepth == 1) {
-			ret = fit_image_get_data_offset(fit, noffset, &offset);
+			ret = fit_image_get_data(fit, noffset, &data, &len);
 			if (ret) {
-				debug("itb image '%s' has no external data\n",
+				debug("itb image '%s' has no valid data\n",
 				      fit_get_name(fit, noffset, NULL));
 				continue;
 			}
 
-			ret = fit_image_get_data_size(fit, noffset, &len);
-			if (ret)
-				len = 0;
+			offset = data - fit;
+			/* Skip embedded data within FIT structure */
+			if (offset < fdt_totalsize(fit))
+				continue;
 
 			if (offset + len > end)
 				end = offset + len;
 
-			debug("image '%s' offs = 0x%x, len = 0x%x\n",
+			debug("image '%s' offs = 0x%x, len = 0x%zx\n",
 			      fit_get_name(fit, noffset, NULL), offset, len);
 		}
 	}
@@ -341,8 +344,6 @@ u32 itb_image_size(const void *fit)
 		debug("FIT image has no external data\n");
 		return 0;
 	}
-
-	end += ((fdt_totalsize(fit) + 3) & ~3);
 
 	debug("itb image size = %uB (0x%xB)\n", end, end);
 
@@ -353,7 +354,10 @@ static int itb_external_image_data_info(const void *fit, int cfg_noffset,
 					const char *prop_name, u32 *data_offset,
 					u32 *data_len)
 {
-	int ret, noffset, offset, len;
+	int ret, noffset;
+	const void *data;
+	u32 offset;
+	size_t len;
 
 	noffset = fit_conf_get_prop_node_index(fit, cfg_noffset, prop_name, 0);
 	if (noffset < 0) {
@@ -363,30 +367,21 @@ static int itb_external_image_data_info(const void *fit, int cfg_noffset,
 
 	debug("itb cfg prop '%s' = %u\n", prop_name, noffset);
 
-	ret = fit_image_get_data_offset(fit, noffset, &offset);
+	ret = fit_image_get_data(fit, noffset, &data, &len);
 	if (ret) {
-		debug("itb cfg prop '%s' has no external data\n", prop_name);
+		debug("itb cfg prop '%s' has no valid data\n", prop_name);
 		return ret;
 	}
 
-	/*
-	 * For FIT with external data, figure out where
-	 * the external images start. This is the base
-	 * for the data-offset properties in each image.
-	 */
-	offset += ((fdt_totalsize(fit) + 3) & ~3);
+	offset = data - fit;
+	if (offset < fdt_totalsize(fit)) {
+		debug("itb cfg prop '%s' has no external data\n", prop_name);
+		return -ENOENT;
+	}
 
 	debug("itb cfg prop '%s' external data offset = 0x%x\n", prop_name,
 	      offset);
-
-	ret = fit_image_get_data_size(fit, noffset, &len);
-	if (ret) {
-		debug("itb cfg prop '%s' has no external data size\n",
-		       prop_name);
-		return ret;
-	}
-
-	debug("itb cfg prop '%s' external data size = 0x%x\n", prop_name, len);
+	debug("itb cfg prop '%s' external data size = 0x%zx\n", prop_name, len);
 
 	if (data_offset)
 		*data_offset = offset;
